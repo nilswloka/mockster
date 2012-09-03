@@ -10,16 +10,24 @@ Create a new mock response by sending a POST request with your configuration to 
 
 Consecutive calls with the same URI and method can be responded to by sending multiple configuration requests. Responses will be sent in FIFO order.
 
-Remove all mock responses for a given uri and method by sending a DELETE request to `/mockster-responses`, using the following syntax:
-- Use query parameters `uri` and `method` to identify the responses that should no longer be responded to.
+Remove all mock responses for a given URI and method by sending a DELETE request to `/mockster-responses`, using the following syntax:
+- Use query parameters `uri` and `method` to identify the requests that should no longer be responded to.
 
 ### Example
 
-1. `lein ring server-headless`
-2. `curl -X POST -H "Content-Type: application/json"      
-   -d '{"status": 200, "body": [{"id": 1}, {"id": 2}, {"id": 3}]}'     
-   "localhost:3000/mockster-responses?uri=/api/things&method=get"`
-3. `curl http://localhost:3000/api/things`
+```
+lein ring server-headless
+```
+
+```
+curl -X POST -H "Content-Type: application/json" \
+-d '{"status": 200, "body": [{"id": 1}, {"id": 2}, {"id": 3}]}' \
+"localhost:3000/mockster-responses?uri=/api/things&method=get"
+```
+
+```
+curl http://localhost:3000/api/things
+```
 
 ## License
 
