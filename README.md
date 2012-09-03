@@ -1,5 +1,7 @@
 # mockster
 
+[![Build Status](https://secure.travis-ci.org/nilswloka/mockster.png?branch=master)](http://travis-ci.org/nilswloka/mockster)
+
 A simple, configurable data backend mock.
 
 ## Usage
@@ -28,6 +30,12 @@ curl -X POST -H "Content-Type: application/json" \
 ```
 curl http://localhost:3000/api/things
 ```
+
+## Note
+
+If you like mockster, consider endorsing me at [coderwall](http://coderwall.com/nilswloka): 
+
+[![endorse](http://api.coderwall.com/nilswloka/endorsecount.png)](http://coderwall.com/nilswloka)
 
 ## License
 
