@@ -4,35 +4,46 @@
 
 (def responses (atom {}))
 
-(defn responder [{uri :uri, method :request-method}]
-  (do
-    (println "Inside responder:\nMethod: " method "\nURI: " uri)
-    (if-let [response (@responses {:uri uri, :method method})]
-      (assoc response :body (json-str (:body response)))
-      {:status 404})))
+(defn response-key-for [uri method]
+  (let [method (keyword method)
+        response-key {:uri uri, :method method}]
+    response-key))
 
-(defn configurator [request]
+(defn configure [{{uri "uri" method "method"} :params :as request}]
   (let [params (:params request)
-        method (keyword (get params "method"))
-        uri (get params "uri")
-        response-key {:uri uri, :method method}
+        response-key (response-key-for uri method)
         response-value (read-json (slurp (:body request)))]
-    (println "In configurator:\nMethod: " method "\nURI: " uri "\nResponse:" response-key ": " response-value)
-    (swap! responses assoc response-key response-value)
+    (swap! responses (partial merge-with (fn [former new] (concat former new))) {response-key (vector response-value)})
     {:status 200}))
 
+(defn delete [{{uri "uri" method "method"} :params}]
+  (let [response-key (response-key-for uri method)]
+    (swap! responses dissoc response-key)
+    {:status 200}))
+
+(defn respond-to [{uri :uri, method :request-method}]
+  (do
+    (let [all-responses @responses
+          the-key {:uri uri, :method method}
+          first-matching-response (first (all-responses the-key))
+          rest-matching-responses (rest (all-responses the-key))]
+      (if (not (nil? first-matching-response))
+        (do
+          (swap! responses assoc the-key rest-matching-responses)
+          (assoc first-matching-response :body (json-str (:body first-matching-response))))
+        {:status 404}))))
+
 (defn router [request]
-  (let [uri (:uri request)]
-    (println "Inside router")
-    (if (= uri "/configure-mockster")
-      (configurator request)
-      (responder request))))
+  (let [uri (:uri request)
+        method (:request-method request)]
+    (cond
+     (and (= uri "/mockster-responses") (= method :post)) (configure request)
+     (and (= uri "/mockster-responses") (= method :delete)) (delete request)
+     :else (respond-to request))))
 
 (defn echo [request]
   {:status 200
    :body (str request)})
 
-(def app
-  (-> router
-      (wrap-params)))
+(def app (wrap-params router))
 
