@@ -31,6 +31,10 @@ curl -X POST -H "Content-Type: application/json" \
 curl http://localhost:3000/api/things
 ```
 
+## Download
+
+If you prefer to deploy mockster as a WAR archive, you can grab a pre-build standalone WAR from the [the download section](https://github.com/nilswloka/mockster/downloads).
+
 ## Note
 
 If you like mockster, consider endorsing me at [coderwall](http://coderwall.com/nilswloka): 
