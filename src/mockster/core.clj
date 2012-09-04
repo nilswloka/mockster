@@ -41,9 +41,5 @@
      (and (= uri "/mockster-responses") (= method :delete)) (delete request)
      :else (respond-to request))))
 
-(defn echo [request]
-  {:status 200
-   :body (str request)})
-
 (def app (wrap-params router))
 
