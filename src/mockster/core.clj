@@ -35,15 +35,12 @@
 
 (defn router [request]
   (let [uri (:uri request)
-        method (:request-method request)]
+        method (:request-method request)
+        context (:context request)]
     (cond
-     (and (= uri "/mockster-responses") (= method :post)) (configure request)
-     (and (= uri "/mockster-responses") (= method :delete)) (delete request)
+     (and (= uri (str context "/mockster-responses")) (= method :post)) (configure request)
+     (and (= uri (str context "/mockster-responses")) (= method :delete)) (delete request)
      :else (respond-to request))))
-
-(defn echo [request]
-  {:status 200
-   :body (str request)})
 
 (def app (wrap-params router))
 

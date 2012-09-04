@@ -57,4 +57,12 @@
         (reset! responses {})
         (app the-configuration-request)
         (app the-delete-request)
-        (is (= (app the-api-request) {:status 404}))))))
+        (is (= (app the-api-request) {:status 404}))))
+    (testing "configuration uri works without :context param"
+      (with-redefs [mockster.core/configure (fn [request] "has been called")]
+        (let [the-configuration-request {:uri "/mockster-responses" :request-method :post}]
+          (is (= (app the-configuration-request) "has been called")))))
+    (testing "configuration uri works with :context param"
+      (with-redefs [mockster.core/configure (fn [request] "has been called")]
+        (let [the-configuration-request {:uri "/contextpath/mockster-responses" :request-method :post :context "/contextpath"}]
+          (is (= (app the-configuration-request) "has been called")))))))
