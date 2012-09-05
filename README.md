@@ -14,6 +14,7 @@ Consecutive calls with the same URI and method can be responded to by sending mu
 
 Remove all mock responses for a given URI and method by sending a DELETE request to `/mockster-responses`, using the following syntax:
 - Use query parameters `uri` and `method` to identify the requests that should no longer be responded to.
+
 Sending a DELETE request to `/mockster-responses` without an URI will remove ALL messages.
 
 ### Example
