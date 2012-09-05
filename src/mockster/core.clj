@@ -17,30 +17,30 @@
     {:status 200}))
 
 (defn delete [{{uri "uri" method "method"} :params}]
-  (let [response-key (response-key-for uri method)]
-    (swap! responses dissoc response-key)
-    {:status 200}))
+  (if (nil? uri)
+    (do
+      (reset! responses {})
+      {:status 200})
+    (let [response-key (response-key-for uri method)]
+      (swap! responses dissoc response-key)
+      {:status 200})))
 
 (defn respond-to [{uri :uri, method :request-method}]
-  (do
-    (let [all-responses @responses
-          the-key {:uri uri, :method method}
-          first-matching-response (first (all-responses the-key))
-          rest-matching-responses (rest (all-responses the-key))]
-      (if (not (nil? first-matching-response))
-        (do
-          (swap! responses assoc the-key rest-matching-responses)
-          (assoc first-matching-response :body (json-str (:body first-matching-response))))
-        {:status 404}))))
+  (let [all-responses @responses
+        the-key {:uri uri, :method method}
+        first-matching-response (first (all-responses the-key))
+        rest-matching-responses (rest (all-responses the-key))]
+    (if (not (nil? first-matching-response))
+      (do
+        (swap! responses assoc the-key rest-matching-responses)
+        (assoc first-matching-response :body (json-str (:body first-matching-response))))
+      {:status 404})))
 
-(defn router [request]
-  (let [uri (:uri request)
-        method (:request-method request)
-        context (:context request)]
-    (cond
-     (and (= uri (str context "/mockster-responses")) (= method :post)) (configure request)
-     (and (= uri (str context "/mockster-responses")) (= method :delete)) (delete request)
-     :else (respond-to request))))
+(defn router [{uri :uri method :request-method context :context :as request}]
+  (cond
+   (and (= uri (str context "/mockster-responses")) (= method :post)) (configure request)
+   (and (= uri (str context "/mockster-responses")) (= method :delete)) (delete request)
+   :else (respond-to request)))
 
 (def app (wrap-params router))
 
