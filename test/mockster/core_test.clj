@@ -65,4 +65,12 @@
     (testing "configuration uri works with :context param"
       (with-redefs [mockster.core/configure (fn [request] "has been called")]
         (let [the-configuration-request {:uri "/contextpath/mockster-responses" :request-method :post :context "/contextpath"}]
+          (is (= (app the-configuration-request) "has been called")))))
+    (testing "deletion uri works without :context param"
+      (with-redefs [mockster.core/delete (fn [request] "has been called")]
+        (let [the-configuration-request {:uri "/mockster-responses" :request-method :delete}]
+          (is (= (app the-configuration-request) "has been called")))))
+    (testing "deletion uri works with :context param"
+      (with-redefs [mockster.core/delete (fn [request] "has been called")]
+        (let [the-configuration-request {:uri "/contextpath/mockster-responses" :request-method :delete :context "/contextpath"}]
           (is (= (app the-configuration-request) "has been called")))))))
